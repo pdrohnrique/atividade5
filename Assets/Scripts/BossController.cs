@@ -37,6 +37,8 @@ public sealed class BossController : MonoBehaviour
     private float nextShotTime;
     private bool invulnerable;
     private Coroutine transitionRoutine;
+    private Rigidbody2D movementBody;
+    private Vector2 movementTarget;
 
     private static readonly int HealthPhaseId = Animator.StringToHash("HealthPhase");
     private static readonly int PatternIndexId = Animator.StringToHash("PatternIndex");
@@ -52,12 +54,28 @@ public sealed class BossController : MonoBehaviour
     {
         currentHealth = Mathf.Max(1, maxHealth);
         if (animator == null) animator = GetComponent<Animator>();
+        movementBody = GetComponent<Rigidbody2D>();
+        movementTarget = movementBody != null ? movementBody.position : transform.position;
         if (renderersToFlash == null || renderersToFlash.Length == 0)
             renderersToFlash = GetComponentsInChildren<Renderer>(true);
         bulletPool = new ObjectPool<Bullet>(CreateBullet, OnTakeBullet, OnReleaseBullet,
             OnDestroyBullet, true, Mathf.Max(1, poolDefaultCapacity), Mathf.Max(1, poolMaxSize));
         SetPhase(DeterminePhase(), false);
         UpdateHealthBar();
+    }
+
+    private void FixedUpdate()
+    {
+        if (invulnerable || currentHealth <= 0) return;
+
+        Vector2 currentPosition = movementBody != null ? movementBody.position : transform.position;
+        Vector2 nextPosition = Vector2.MoveTowards(
+            currentPosition,
+            movementTarget,
+            patternMoveSpeed * Time.fixedDeltaTime);
+
+        if (movementBody != null) movementBody.MovePosition(nextPosition);
+        else transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
     }
 
     public void TakeDamage(int damage)
@@ -153,7 +171,7 @@ public sealed class BossController : MonoBehaviour
                 break;
             case BossAttackPattern.AimedBurst:
                 MoveTo(new Vector2(playerPosition.x, arenaMax.y));
-                FireBurst(1f, 3, 0.15f);
+                FireBurst(1f, 3, 12f);
                 break;
             case BossAttackPattern.CrossSpread:
                 MoveHorizontally(stateTime * 1.35f);
@@ -164,12 +182,13 @@ public sealed class BossController : MonoBehaviour
                 FireRain(0.2f, 3);
                 break;
             case BossAttackPattern.DashAndAim:
-                MoveTo(new Vector2(Mathf.Sin(stateTime * 2.4f) * arenaMax.x * 0.8f, arenaMax.y - Mathf.PingPong(stateTime * 1.2f, 1.2f)));
-                FireAtPlayer(0.4f, 2);
+                // Corrigido: Agora desce ate 2.5 unidades no eixo Y durante a investida
+                MoveTo(new Vector2(Mathf.Sin(stateTime * 2.4f) * arenaMax.x * 0.8f, arenaMax.y - Mathf.PingPong(stateTime * 1.2f, 2.5f)));
+                FireAtPlayer(0.5f, 2);
                 break;
             case BossAttackPattern.DenseFan:
                 MoveHorizontally(stateTime * 1.8f);
-                FireFan(0.3f, 9, 60f);
+                FireFan(0.45f, 9, 90f);
                 break;
             case BossAttackPattern.Spiral:
                 MoveTo(new Vector2(Mathf.Sin(stateTime * 1.4f) * arenaMax.x * 0.7f, arenaMax.y));
@@ -203,7 +222,9 @@ public sealed class BossController : MonoBehaviour
 
     private void MoveTo(Vector2 destination)
     {
-        transform.position = Vector2.MoveTowards(transform.position, destination, patternMoveSpeed * Time.deltaTime);
+        movementTarget = new Vector2(
+            Mathf.Clamp(destination.x, arenaMin.x, arenaMax.x),
+            Mathf.Clamp(destination.y, arenaMin.y, arenaMax.y));
     }
 
     private void FireAtPlayer(float interval, int shots)
@@ -212,7 +233,20 @@ public sealed class BossController : MonoBehaviour
         nextShotTime = Time.time + interval;
         Vector2 origin = MuzzlePosition(0);
         Vector2 direction = (FindPlayerPosition() - origin).normalized;
-        for (int i = 0; i < shots; i++) Fire(direction);
+
+        if (shots <= 1)
+        {
+            Fire(direction);
+        }
+        else
+        {
+            float spreadAngle = 8f;
+            for (int i = 0; i < shots; i++)
+            {
+                float angle = (i - (shots - 1) * 0.5f) * spreadAngle;
+                Fire(Rotate(direction, angle));
+            }
+        }
     }
 
     private void FireBurst(float interval, int shots, float spreadStep)

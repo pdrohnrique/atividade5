@@ -291,7 +291,7 @@ GameObject:
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
-  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1344,7 +1344,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: DEFESA / GAME OVER
+  m_Text: GAME OVER
 --- !u!222 &973486111
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1567,12 +1567,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4868645093503797960, guid: c4a53915808f40c6cb989d026b12908d, type: 3}
       propertyPath: bulletDamage
-      value: 10
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4868645093503797960, guid: c4a53915808f40c6cb989d026b12908d, type: 3}
+      propertyPath: lowerHalfTop
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4868645093503797960, guid: c4a53915808f40c6cb989d026b12908d, type: 3}
       propertyPath: gameplayCamera
       value: 
       objectReference: {fileID: 783076164}
+    - target: {fileID: 4868645093503797960, guid: c4a53915808f40c6cb989d026b12908d, type: 3}
+      propertyPath: viewportPadding.x
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4868645093503797960, guid: c4a53915808f40c6cb989d026b12908d, type: 3}
+      propertyPath: viewportPadding.y
+      value: 0.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1600,7 +1612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5591636660587351949, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 3.75
       objectReference: {fileID: 0}
     - target: {fileID: 5591636660587351949, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1639,12 +1651,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 492047828}
     - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: arenaMax.x
-      value: 8
+      value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
+      propertyPath: arenaMax.y
+      value: 3.75
       objectReference: {fileID: 0}
     - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: arenaMin.x
-      value: -8
+      value: -6.5
       objectReference: {fileID: 0}
     - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: arenaMin.y
@@ -1656,7 +1676,7 @@ PrefabInstance:
       objectReference: {fileID: 432090809}
     - target: {fileID: 6103631800623991309, guid: 4065d1681a0f6e1f6a99508ad3c434b6, type: 3}
       propertyPath: patternMoveSpeed
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
